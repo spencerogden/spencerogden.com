@@ -1,0 +1,393 @@
+<html>
+<head>
+	<title>Adaptive Markets and Probability Matching</title>
+	<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/themes/base/jquery-ui.css" rel="Stylesheet" />
+	<script type="text/javascript" src="http://spencerogden.com/js/d3.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+	    var population = [];
+       
+	    for( var i = 0; i <= 100; i += 5 ){
+	        population.push({ f: i/100, count: 1 });
+	    }
+	        
+	    function fs_in( population ){
+	        fs = [];
+	        for( var i = 0; i < population.length; i++ ){
+	            fs.push(String(population[i].f));
+	        }
+	        return fs;
+	    }
+	    
+	    function survey( population ){
+	        res = [[],0];
+	        for( var i = 0; i < population.length; i++ ){
+	            var c = population[i].count;
+	            res[0].push(c);
+	            res[1] += c;
+	        }
+	        return res;
+	    }
+	    
+	    function counts_in( population ){
+	        var res = survey(population);
+	        return res[0];
+	    }
+	    
+	    function percents_in( population ){
+	        res = survey(population);
+	        var pers = [];
+	        for( var i = 0; i < res[0].length; i++ ){
+	            pers.push(res[0][i] / res[1]);
+	        }
+	        return pers;
+	    }
+	        
+		var xoffset = 0;
+		var yoffset = 0;
+		var plot_height = 0;		
+		var height = 0;
+		var width = 0;
+		var x = 0;
+		var y = 0;
+		
+		var tempo = 10;
+		var timer = 0;
+		var tempo_scale = d3.scale.linear()
+			.domain([0,100])
+			.range([10000,10]);
+			
+		var source_blend = 0.5;
+		var probability = 0.5;
+		
+		function update_cycle( setTimer ){
+		    //console.log("called update cycle");
+		    update_model();
+		    redraw_chart();
+		    //console.log(counts_in(population));
+		    //console.log(percents_in(population));
+		    if(setTimer){timer = window.setTimeout(function(){update_cycle(true)},tempo)};
+		}
+	
+		$(document).ready(function(){
+			$("#tempo").slider({
+				change: function(event, ui){
+							console.log("set tempo to "+tempo_scale(ui.value));
+							tempo = tempo_scale(ui.value);
+							clearTimeout(timer);
+							timer = update_cycle(true);
+						}
+				});
+			$("#tempo").slider("value",100);
+			
+			$("#prob").slider({
+				slide: function(event, ui){ 
+					//console.log("set probability to "+ui.value/100);
+					probability = ui.value/100;
+					$(this).children('.ui-slider-handle').css({'text-decoration': "none", 'text-align': "center"}).text(ui.value);
+					$("#prob_value").text(probability.toFixed(2))
+					},
+				change: function(event, ui){ 
+					//console.log("set probability to "+ui.value/100);
+					probability = ui.value/100;
+					$(this).children('.ui-slider-handle').css({'text-decoration': "none", 'text-align': "center"}).text(ui.value);
+					$("#prob_value").text(probability.toFixed(2))
+					},					
+				//slide: function(event,ui){
+				//    var p = ui.value/100;
+				//    $("#prob_value").text(p.toFixed(2))
+				//    }
+				});
+			$("#prob").slider("value",75);
+				
+			$("#source").slider({
+				slide: function(event, ui){ 
+					//console.log("set source blend to "+ui.value/100);
+					source_blend = ui.value / 100;
+					},
+				change: function(event, ui){ 
+					//console.log("set source blend to "+ui.value/100);
+					source_blend = ui.value / 100;}
+				});
+			$("#source").slider("value",10);
+			
+			$("#cycle").button().click( function(){ update_cycle(false) });
+			$("#stop" ).button().click( function(){ 
+                    if( $(this).text() == "Stop" ){
+                        clearTimeout(timer); 
+                        $(this).text("Start");
+                    }else{
+                        $(this).text("Stop");
+                        update_cycle(true);
+                    }
+			    });
+			    
+			$("#chart").click( function(){
+                    if( !timer ){
+                        
+                        update_cycle(true);
+                        
+                        d3.selectAll(".playpause").remove();
+                        
+                        d3.select("#chart")
+                                 .append("rect")
+                                     .attr("class","playpause")
+                                     .attr("x",width/2 - 50)
+                                     .attr("y", height/2 - 50)
+                                     .attr("height", 100)
+                                     .attr("width", 100)
+                                     .attr("rx",25)
+                                     .attr("ry",25)
+                                     .attr("fill-opacity",0)
+                                     .attr("fill","grey");
+                        d3.select("#chart")
+                                 .append("svg:path")
+                                    .attr("class","playpause")
+                                     .attr("d","M 0 0 L 0 60 L 52 30 L 0 0")
+                                     .attr("fill", "white")
+                                     .attr("stroke","none")
+                                     .attr("transform","translate("+(width/2-22)+","+(height/2-30)+")")
+                                     .attr("fill-opacity",0);
+                        d3.selectAll(".playpause")
+                            .transition()
+                                .duration(500)
+                                .attr("fill-opacity",1)
+                        d3.selectAll(".playpause")
+                            .transition()
+                                .delay(600)
+                                .duration(1000)
+                                .attr("fill-opacity",0);
+                                    
+                        //d3.selectAll(".playpause").remove();
+                    }else{
+                        clearTimeout( timer );
+                        timer = false;
+                        
+                        d3.selectAll(".playpause").remove();
+                        d3.select("#chart")
+                                 .append("rect")
+                                     .attr("class","playpause")
+                                     .attr("x",width/2 - 50)
+                                     .attr("y", height/2 - 50)
+                                     .attr("height", 100)
+                                     .attr("width", 100)
+                                     .attr("rx",25)
+                                     .attr("ry",25)
+                                     .attr("fill-opacity",0)
+                                     .attr("fill","grey");
+                        d3.select("#chart")
+                            .append("rect")
+                                .attr("class","playpause")
+                                .attr("height",60)
+                                .attr("width",20)
+                                .attr("x",width/2+5)
+                                .attr("y",height/2-30)
+                                .attr("stroke","none")
+                                .attr("fill","white")
+                                .attr("fill-opacity",0);
+                        d3.select("#chart")
+                            .append("rect")
+                                .attr("class","playpause")
+                                .attr("height",60)
+                                .attr("width",20)
+                                .attr("x", width/2 - 25)
+                                .attr("y",height/2-30)
+                                .attr("stroke","none")
+                                .attr("fill","white")
+                                .attr("fill-opacity",0);
+                        d3.selectAll(".playpause")
+                            .transition()
+                                .duration(500)
+                                .attr("fill-opacity",1)
+                        d3.selectAll(".playpause")
+                            .transition()
+                                .delay(600)
+                                .duration(1000)
+                                .attr("fill-opacity",0);
+                        //d3.selectAll(".playpause").remove();
+                    }
+			    });
+			
+			xoffset = 50;
+			yoffset = 30;
+			plot_height = 200;		
+			height = plot_height + yoffset*2;
+			width = $("#chartwrap").width();
+			x = d3.scale.ordinal()
+				.domain(fs_in(population)) 
+				.rangeBands([0, width-xoffset*2]) ;
+			y = d3.scale.linear()
+				.domain([0, 1])
+				.range([0,plot_height]);		
+			
+			
+			draw_chart();
+			update_cycle(true);
+		});
+		
+		$(window).resize(function(){ console.log("window resize");draw_chart() });		
+		
+		function draw_chart(){
+			var width = $("#chartwrap").width();
+			$(".chart").empty();
+			
+			// Create chart and set margins for plot area
+			var chart = d3.select(".chart")
+				.attr("height",height)
+				.append("g").attr("transform","translate("+xoffset+","+yoffset+")");			
+				
+			// Draw gridlines
+			chart.selectAll(".ruleline")
+				.data(y.ticks(10))
+				.enter().append("line")
+				.attr("class","ruleline")
+				.attr("x1",0)
+				.attr("x2",width)
+				.attr("y1",function(d,i){ return plot_height - y(d)  })
+				.attr("y2",function(d,i){ return plot_height - y(d) });
+				
+			// Draw scale labels
+			chart.selectAll(".rule")
+				.data(y.ticks(5))
+				.enter().append("text")
+				.attr("class","rule")
+				.attr("x",-5)
+				.attr("y",function(d,i){ return plot_height - y(d) })
+				.attr("dy","0.30em")
+				.attr("text-anchor","end")
+				.text(function(d){return (d*100).toFixed(0)+"%"});
+			
+			// Draw data bars
+			chart.selectAll("rect")
+				.data(percents_in(population))
+				.enter().append("rect")
+				.attr("class", "databars")
+				.attr("x", function(d,i){ return x.rangeBand()*i } )//function(d,i){ console.log("drawing index "+i);return x(i)  })
+				.attr("y", function(d,i){ return plot_height - y(d) })
+				.attr("height", y)
+				.attr("width",x.rangeBand());
+				
+			// Draw x axis	
+			chart.append("line")
+				.attr("class","xaxis")
+				.attr("y1",plot_height)
+				.attr("y2",plot_height)
+				.attr("x1",0)
+				.attr("x2",width);
+				
+			// Draw bin labels on x axis	
+			chart.selectAll(".xlabels")
+				.data(fs_in(population))
+				.enter().append("text")
+				.attr("class","xlabels")
+				.attr("x",function(d,i){return x(d) + x.rangeBand() / 2})
+				.attr("y",plot_height)
+				.attr("dy",18)
+				.attr("text-anchor","middle")
+				.text(function(d,i){ return ( i % 1 ==0 ) ? String(d) : '' });
+		}
+		
+		function redraw_chart(){
+			var chart = d3.select(".chart");
+			// Redraw data bars
+			chart.selectAll("rect")
+				.data(percents_in(population))
+				.transition()
+				.duration(tempo*.9)
+				.attr("y", function(d,i){ return plot_height - y(d) } )
+				.attr("height", y )
+		}
+		
+		function update_model(){
+		        var system_rand = Math.random();
+		        var max_pop = 0;
+			//console.log("Update cycle with source blend "+source_blend+" and rand "+system_rand);
+				
+				for( p in population ){
+				    var f = population[p].f;
+			//console.log("testing f "+f);
+				    var count = population[p].count;
+				    var new_count = 0;
+				    for( var i = 0; i < count; i++ ){
+				        var agent_guess = Math.random() < f ? 1 : 0;
+				        var blend_rand = (source_blend*Math.random() + (1-source_blend)*system_rand);
+				        var result = blend_rand < probability ? 1 : 0;
+			//console.log("blend rand "+blend_rand+" give result "+result);
+			//console.log("\tagent "+i+" guessed "+agent_guess+" result was "+result+" he gets "+(1 ^ agent_guess ^ result) * 3+" offspring");
+		
+				        new_count += (1 ^ agent_guess ^ result) * 3
+				    }
+				    population[p].count = Math.max(new_count,1);
+				    if( population[p].count > max_pop ) max_pop = population[p].count;
+				}
+			if( max_pop > 10000 ){
+			    //console.log("rescale");
+			    for(p in population){
+			        population[p].count = Math.ceil( population[p].count / 10 );
+			    }
+			}
+			//console.log("finished cycle");
+		}
+		
+			
+	</script>
+	<style type="text/css">
+		.slider  {
+		    display: inline-block;
+		    width: 100%;
+		    height:20pt;
+		    font-size:15pt;
+		    width: 90%;
+		    margin-left:5%;
+		    text-align: center;
+		    margin-top: 1em;
+		}
+		.slider .ui-slider-handle{ 
+		    width: 3em; 
+		    height: 26pt;
+		    }
+		.chart .databars {
+				  fill:steelblue;
+				  stroke: white;
+				  }
+		.chart .label {
+			stroke: white;
+			}
+		.chart .ruleline {
+			stroke: #ccc;
+			}
+		.chart .xaxis {
+			stroke: black;
+			}
+		.chart .xlabels {
+			stroke: black;
+			}
+		.chart .rule {
+			stroke: black;
+			}
+		.chart {
+			width: 100%;
+			margin: 0;
+			}
+	
+		#chartwrap {
+			width: 100%;
+			border: solid 1px gray;
+			}
+		h1{ 
+		    font-family: sans-serif;
+		}
+	</style>
+</head>
+<body>
+	<h1>The Adaptive Markets Hypothesis</h1>
+	<h2>Probability Matching</h2>
+	<a href="http://www.argentumlux.org/documents/origins.pdf">Brennan, Lo, 2005, <i>The Origin of Behavior</i></a>
+	<div id="chartwrap"><svg id= "chart" class="chart" /></div>
+	<div class="slider" id="prob">Probability</div>
+	<div class="slider" id="source"><table style="width: 100%"><tr><td>Systematic</td><td style="text-align:right">Idiosyncratic</td></tr></table></div>
+</table>
+	
+</body>
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head><title>Spencer Ogden</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+<meta name="Keywords" content="Spencer Ogden sailing linux perl resume pictures Texas team utst spencerogden">
+<meta name="Description" content="Spencer Ogden - Sailing, Finance, Software - Find my resume, photos and other links around the web.">
+
+<meta name="viewport" content="width=device-width, user-scalable=no" />
+
+
+<link media="screen and (min-device-width: 481px)" rel="stylesheet" href="so.css" type="text/css">
+<link media="only screen and (max-device-width: 480px)" href="mobile.css" type= "text/css" rel="stylesheet">
+<link media="only screen and (-webkit-min-device-pixel-ratio: 2)" href="mobile.css" type="text/css" rel="stylesheet">
+<link rel="stylesheet" href="mobile.css" type="text/css" media="handheld" />
+
+</head><body>
+    <div id="info">
+      <div id="head">
+	<a href="http://spencerogden.com">Spencer Ogden</a>
+	<span>CFA, CAIA</span>
+      </div>
+      <a href="resume/"><div class="item">
+	<img class="icon" src="img/resumeicon.png">Resume
+      </div></a>
+      <a href="http://www.linkedin.com/in/sogden"><div class="item">
+	<img class="icon" src="img/linkedinicon.png">LinkedIn
+      </div></a>
+      <a href="http://www.goodreads.com/user/show/5380877-spencer-ogden"><div class="item">
+	<img class="icon" src="img/gr4_128.png">Goodreads
+	<div class="sub">Currently Reading
+	  <div id="books"></div>
+        </div>
+	</div>
+      <a href="http://www.flickr.com/photos/36134791@N06/?savedsettings=4701998654#photo4701998654">
+	<div class="item">
+	  <img class="icon" src="img/flickricon.png">Photos
+	</div>
+      </a>
+      <a href="http://www.facebook.com/spencerjogden"><div class="item">
+	  <img class="icon" src="img/facebookicon.png">Facebook
+      </div></a>
+      <a href="https://github.com/spencerogden"><div class="item">
+	<img class="icon" src="img/github.png">GitHub
+      </div></a>
+      <a href="http://search.cpan.org/~sjo/"><div class="item">
+	<img class="icon" src="img/perlicon.png">CPAN
+      </div></a>
+	<a href="mailto:spencer@spencerogden.com"><div class="item">
+	<img class="icon" src="img/emailicon.png">spencer@spencerogden.com
+      </div></a>
+    </div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.0/jquery.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(){
+  $(".item").hover(function(){
+  $(this).find('.sub').clearQueue().slideDown('fast');
+  },
+  function(){
+  $(this).find('.sub').slideUp('fast');
+  });
+
+  $('#books').load('goodreads.py');
+  
+});
+</script>
+
+
+
+
+<script type="text/javascript">
+ var _gaq = _gaq || [];
+ _gaq.push(['_setAccount', 'UA-22283419-1']);
+ _gaq.push(['_setDomainName', '.spencerogden.com']);
+ _gaq.push(['_trackPageview']);
+
+ (function() {
+   var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+   ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+   var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+ })();
+
+</script>
+
+</body></html>

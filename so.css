@@ -1,0 +1,136 @@
+@font-face {
+    font-family: AlegreyaSans;
+    src: local("AlegreyaSans-Regular"),
+    url(AlegreyaSans-Regular.ttf);
+    font-weight: normal;
+}
+
+body{
+    background-image: url(profile3.jpg);
+    background-attachment: fixed;
+    background-color: black;
+    background-size: 100%;
+    background-repeat: no-repeat;
+    overflow-y: scroll;
+}
+
+div#info{
+    background-color: rgba(0,0,0,0.1);
+    padding: 1em;
+
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    /*position: absolute;
+    top: 50px;
+    left: 950px;
+   */
+    float: right;
+    margin-right:250px;
+    margin-top:50px;
+    font-family:AlegreyaSans, sans-serif;
+}
+
+div#resumes{
+    background-color: black;
+    background-color: rgba(0,0,0,0.1);
+    padding: 1em;
+    opacity: 1;
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    width: 770px;
+}
+
+img.icon{
+    height: 2em;
+    vertical-align: middle;
+    padding-right: .25em;
+    border-style: none;
+}
+
+div#resumes img.icon{
+    height: 4em;
+}
+
+div#head { 
+    font-family:AlegreyaSans, sans-serif;
+    font-weight:bold;
+    font-size: 24pt;
+    border-bottom: 0px solid black;
+    color: white;
+}
+
+div#head span {
+    font-weight:normal;
+    font-size:14pt;
+}
+
+div.item { 
+    opacity: 1;
+    width:325px; 
+    background-color: white;
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    padding: .5em;
+    margin: 0em;
+    margin-top:.5em;
+    vertical-align: middle;
+    font-family:sans-serif;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+div#head a{
+    color:white;
+}
+
+iframe{
+    width: 800px;
+    height: 1500px;
+    border-style: none;
+    background-color: white;
+    -moz-border-radius: 10px;
+    border-radius: 1-px;
+    margin-top: 1em;
+}
+
+.item .sub{
+    display: none;
+    margin-left: 1em;
+    font-weight: bold;
+}
+
+#books {
+    border-top: solid 1px black;
+    font-weight: normal;
+}
+
+#books .book {
+    /*border-left: solid 3px gray;*/
+    margin-bottom: 0.25em;
+    padding-left: 0.5em;
+    margin-left: 3px;
+}
+
+#books .book table tr td{
+    vertical-align: top;
+}
+
+#books .book:hover{
+    border-left: solid 3px #78DCE1;
+    background-color: #D8F0F0;
+    opacity: 1;
+    margin-left:0;
+}
+
+#books .book .title{
+    /*font-style: italic;*/
+}
+
+#books .icon {
+    vertical-align: bottom;
+    height: 16px;
+    margin-left: 0.5em;
+}

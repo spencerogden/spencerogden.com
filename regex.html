@@ -1,0 +1,130 @@
+<html>
+<meta charset="US-ASCII">
+<head>
+<title>Dynamic Regex Crossword</title>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.2/mustache.min.js"></script>
+
+<script type='application/javascript'>
+var dim1 = [
+'.*H.*H.*',
+'(DI|NS|TH|OM)*',
+'F.*[AO].*[AO].*',
+'(O|RHH|MM)*',
+'.*',
+'C*MC(CCC|MM)*',
+'[^C]*[^R]*III.*',
+'(...?)\1*',
+'([^X]|XCC)*',
+'(RR|HHH)*.?',
+'N.*X.X.X.*E',
+'R*D*N*',
+'.(C|HH)*'
+];
+
+var dim2 = [
+'.*G.*V.*H.*',
+'[CR]*',
+'.*XEXM*',
+'.*DD.*CCM.*',
+'.*XHCR.*X.*',
+'.*(.)(.)(.)(.)\4\3\2\1.*',
+'.*(IN|SE|HI)',
+'[^C]*MMM[^C]*',
+'.*(.)C\1X\1.*',
+'[CEIMU]*OH[AEMOR]*',
+'(RX|[^R])*',
+'[^M]*M[^M]*',
+'(S|MM|HHH)*'
+];
+
+var dim3 = [
+'.*SE.*UE.*',
+'.*LR.*RL.*',
+'.*OXR.*',
+'([^EMC]|EM)*',
+'(HHX|[^HX])*',
+'.*PRR.*DDC.*',
+'.*',
+'[AM]*CM(RC)*R?',
+'([^MC]|MM|CC)*',
+'(E|CR|MN)*',
+'P+(..)\1.*',
+'[CHMNOR]*I[CHMNOR]*',
+'(ND|ET|IN)[^X]*'
+];
+
+var h = new Object();
+
+$(document).ready(function(){
+if( dim1.length != dim2.length || dim2.length != dim3.length ){
+//problem
+}
+
+var side = (dim1.length + 1) / 2
+
+var area = 3*Math.sqrt(3)/2*(side*side);
+area = Math.round(area,0);
+
+var inputs = '';
+for( var i=0;i<area;i++){
+inputs += '<input name="' + i + '">'
+}
+$('body').append(inputs)
+
+var svg = d3.select("div").append("svg")
+		 .attr("width",500)
+		 .attr("height",500)
+
+var d3_hexbinAngles = d3.range(0, 2 * Math.PI, Math.PI / 3),
+    d3_hexbinX = function(d) { return d[0]; },
+    d3_hexbinY = function(d) { return d[1]; };
+
+
+var hexagon = function(radius){
+  var x0 = 0, y0 = 0;
+    return d3_hexbinAngles.map(function(angle) {
+      var x1 = Math.sin(angle) * radius,
+          y1 = -Math.cos(angle) * radius,
+          dx = x1 - x0,
+          dy = y1 - y0;
+      x0 = x1, y0 = y1;
+      return [dx, dy];
+    });
+  };
+h.hex = function(radius){
+return "m" + hexagon(radius).join("l") + "z";
+};
+
+height = 500;
+width = 500;
+
+h.mesh = function(radius){
+var r = radius;
+
+dx = r * 2 * Math.sin(Math.PI / 3);
+    dy = r * 1.5;
+var path = [], mesh = hexagon(radius).slice(0, 4).join("l");
+    for (var y = 0, odd = false; y < height + r; y += dy, odd = !odd) {
+      for (var x = odd ? dx / 2 : 0; x < width; x += dx) {
+        path.push("M", x, ",", y, "m", mesh);
+      }
+    }
+    return path.join("");
+  };
+
+//svg.append(h.mesh(6));
+
+})
+</script>
+
+
+</head>
+<body>
+<div></div>
+
+
+</body>
+</html>
